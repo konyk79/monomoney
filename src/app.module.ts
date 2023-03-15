@@ -21,7 +21,7 @@ import { AppService } from './app.service';
     {
       provide: 'REDIS_OPTIONS2',
       useValue: {
-        url: 'redis://localhost:6399',
+        url: 'redis://localhost:6380',
         retryAttempts: 5,
         retryDelay: 5000,
       },
