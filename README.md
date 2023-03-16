@@ -22,9 +22,9 @@ sudo systemctl status redis-server-stage.service
 if you want check that these are independent instances,then you can use:
 
 redis-cli -p 6379 (6380 for stage, 6382 for dev)
-and set test prod
+and run `set test prod`
 
-After this go to another redis and check that test is not defined. After this you can set test to relevant environment and go to third one. In every instance will be only own value.
+After this go to another redis and check that test is not defined. Run `get test`. After this you can set test to relevant environment and go to third one. In every instance will be only own value.
 
 Actually set new data in redis you will increase size of db and can see it in endpoint:
 
