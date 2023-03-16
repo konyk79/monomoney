@@ -6,15 +6,15 @@ REDIS_OPTIONS_STAGE=redis://localhost:6380
 REDIS_OPTIONS_DEVELOPMENT=redis://localhost:6382
 
 If you want check redis instances in server terminal use:
+`sudo ps aux |grep redis`
 
-sudo ps aux |grep redis
+Output:
 
-output:
-`redis 4480 0.1 0.7 63896 7428 ? Ssl Mar13 7:16 /usr/bin/redis-server 127.0.0.1:6380
-redis 72848 0.2 0.7 63900 7684 ? Ssl 09:39 0:52 /usr/bin/redis-server 127.0.0.1:6382
-redis 76789 0.3 0.8 63900 7948 ? Ssl 15:12 0:20 /usr/bin/redis-server 127.0.0.1:6379`
+`redis 4480 0.1 0.7 63896 7428 ? Ssl Mar13 7:16 /usr/bin/redis-server 127.0.0.1:6380
+redis 72848 0.2 0.7 63900 7684 ? Ssl 09:39 0:52 /usr/bin/redis-server 127.0.0.1:6382
+redis 76789 0.3 0.8 63900 7948 ? Ssl 15:12 0:20 /usr/bin/redis-server 127.0.0.1:6379`
 
-to check statuses of all redis services:
+To check statuses of all redis services:
 
 sudo systemctl status redis-server.service
 sudo systemctl status redis-server-dev.service
@@ -52,17 +52,3 @@ port 6380
 
 Create new service file
 $ sudo cp /lib/systemd/system/redis-server.service /lib/systemd/system/redis-server2.service
-
-Edit the new service file
-$ sudo vim /lib/systemd/system/redis-server2.service
-ExecStart=/usr/bin/redis-server /etc/redis/redis2.conf
-PIDFile=/var/run/redis/redis-server2.pid
-ReadWriteDirectories=-/var/lib/redis2
-Alias=redis2.service
-
-Enable and start the service
-$ sudo systemctl enable redis-server2.service
-$ sudo systemctl start redis-server2.service
-
-Check status
-$ ps aux |grep redis
