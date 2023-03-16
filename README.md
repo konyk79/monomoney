@@ -10,9 +10,9 @@ If you want check redis instances in server terminal use:
 sudo ps aux |grep redis
 
 output:
-redis 4480 0.1 0.7 63896 7428 ? Ssl Mar13 7:16 /usr/bin/redis-server 127.0.0.1:6380
+`redis 4480 0.1 0.7 63896 7428 ? Ssl Mar13 7:16 /usr/bin/redis-server 127.0.0.1:6380
 redis 72848 0.2 0.7 63900 7684 ? Ssl 09:39 0:52 /usr/bin/redis-server 127.0.0.1:6382
-redis 76789 0.3 0.8 63900 7948 ? Ssl 15:12 0:20 /usr/bin/redis-server 127.0.0.1:6379
+redis 76789 0.3 0.8 63900 7948 ? Ssl 15:12 0:20 /usr/bin/redis-server 127.0.0.1:6379`
 
 to check statuses of all redis services:
 
@@ -32,7 +32,7 @@ Actually set new data in redis you will increase size of db and can see it in en
 http://167.172.186.58:8081/redisStatus
 
 output:
-{"redisStatus":{"production":{"status":"active","dbsize":4},"stage":{"status":"active","dbsize":3},"development":{"status":"active","dbsize":2}}}
+`{"redisStatus":{"production":{"status":"active","dbsize":4},"stage":{"status":"active","dbsize":3},"development":{"status":"active","dbsize":2}}}`
 
 To install 3 different instances I used this link:
 https://gist.github.com/abdulrahman911/a384a0770db6222acb9ff0d677ab47dd
