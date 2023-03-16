@@ -17,24 +17,18 @@ export class AppService {
     environment: 'production' | 'development' | 'stage',
     redis: Redis.RedisClientType,
   ): Promise<{
-    [key: string]: {
-      status: string;
-      dbsize: number | undefined;
-    };
+    status: string;
+    dbsize: number | undefined;
   }> {
     let prod: {
-      [key: string]: {
-        status: string;
-        dbsize: number | undefined;
-      };
+      status: string;
+      dbsize: number | undefined;
     };
     try {
       await redis.connect();
       prod = {
-        [environment]: {
-          status: 'active',
-          dbsize: await redis.sendCommand(['DBSIZE']),
-        },
+        status: 'active',
+        dbsize: await redis.sendCommand(['DBSIZE']),
       };
       await redis.disconnect();
     } catch (er) {
@@ -43,10 +37,8 @@ export class AppService {
         redis.disconnect();
       } catch (_er) {}
       prod = {
-        [environment]: {
-          status: 'inactive',
-          dbsize: undefined,
-        },
+        status: 'inactive',
+        dbsize: undefined,
       };
     }
     return prod;
@@ -57,7 +49,7 @@ export class AppService {
       redisStatus: {
         production: await this.fillInRadisAnswer('production', this.redis),
         stage: await this.fillInRadisAnswer('stage', this.redisStage),
-        development: await this.fillInRadisAnswer('stage', this.redisDev),
+        development: await this.fillInRadisAnswer('development', this.redisDev),
       },
     };
 
