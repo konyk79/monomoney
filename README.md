@@ -1,73 +1,68 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
-
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Redis ports set up in .env:
+REDIS_OPTIONS_PRODUCTION=redis://localhost:6379
+REDIS_OPTIONS_STAGE=redis://localhost:6380
+REDIS_OPTIONS_DEVELOPMENT=redis://localhost:6382
 
-## Installation
+If you want check redis instances in server terminal use:
 
-```bash
-$ npm install
-```
+sudo ps aux |grep redis
+input:
 
-## Running the app
+redis 4480 0.1 0.7 63896 7428 ? Ssl Mar13 7:16 /usr/bin/redis-server 127.0.0.1:6380
+redis 72848 0.2 0.7 63900 7684 ? Ssl 09:39 0:52 /usr/bin/redis-server 127.0.0.1:6382
+redis 76789 0.3 0.8 63900 7948 ? Ssl 15:12 0:20 /usr/bin/redis-server 127.0.0.1:6379
 
-```bash
-# development
-$ npm run start
+to check statuses of all redis services:
 
-# watch mode
-$ npm run start:dev
+sudo systemctl status redis-server.service
+sudo systemctl status redis-server-dev.service
+sudo systemctl status redis-server-stage.service
 
-# production mode
-$ npm run start:prod
-```
+if you want check that these are independent instances,then you can use:
 
-## Test
+redis-cli -p 6379 (6380 for stage, 6382 for dev)
+and set test prod
 
-```bash
-# unit tests
-$ npm run test
+After this go to another redis and check that test is not defined. After this you can set test to relevant environment and go to third one. In every instance will be only own value.
 
-# e2e tests
-$ npm run test:e2e
+Actually set new data in redis you will increase size of db and can see it in endpoint:
 
-# test coverage
-$ npm run test:cov
-```
+http://167.172.186.58:8081/redisStatus
+input:
 
-## Support
+{"redisStatus":{"production":{"status":"active","dbsize":4},"stage":{"status":"active","dbsize":3},"development":{"status":"active","dbsize":2}}}```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+To install 3 different instances I used this link:
+https://gist.github.com/abdulrahman911/a384a0770db6222acb9ff0d677ab47dd
 
-## Stay in touch
+Create the directory for the new instance
+$ sudo install -o redis -g redis -d /var/lib/redis2
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Create a new configuration file
+$ sudo cp -p /etc/redis/redis.conf /etc/redis/redis2.conf
 
-## License
+Edit the new configuration file
+$ sudo nano /etc/redis/redis2.conf
+pidfile /var/run/redis/redis-server2.pid
+logfile /var/log/redis/redis-server2.log
+dir /var/lib/redis2
+port 6380
 
-Nest is [MIT licensed](LICENSE).
+Create new service file
+$ sudo cp /lib/systemd/system/redis-server.service /lib/systemd/system/redis-server2.service
+
+Edit the new service file
+$ sudo vim /lib/systemd/system/redis-server2.service
+ExecStart=/usr/bin/redis-server /etc/redis/redis2.conf
+PIDFile=/var/run/redis/redis-server2.pid
+ReadWriteDirectories=-/var/lib/redis2
+Alias=redis2.service
+
+Enable and start the service
+$ sudo systemctl enable redis-server2.service
+$ sudo systemctl start redis-server2.service
+
+Check status
+$ ps aux |grep redis
